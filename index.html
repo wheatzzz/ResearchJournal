@@ -1,293 +1,194 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
     <style>
-        :root {
-            --white:     #fafaf8;
-            --off-white: #f2f1ee;
-            --ink:       #111110;
-            --ink-mid:   #555550;
-            --ink-faint: #99998f;
-            --rule:      rgba(17,17,16,0.12);
-            --pad-x:     3.5rem;
-            --pad-y:     3rem;
-        }
+        @font-face { font-family: 'helv'; src: url('HelveticaNowDisplay.otf'); }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        @font-face {
-            font-family: 'helv';
-            src: url('HelveticaNowDisplay.otf');
-        }
-
         body {
             font-family: helv, 'Helvetica Neue', Arial, sans-serif;
-            font-size: 13px;
             font-weight: 300;
-            color: var(--ink);
-            background: var(--white);
-            font-feature-settings: "ss04";
+            background: #fafaf8;
         }
 
-        /* ── COVER ── */
-        .cover-section {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            align-items: flex-end;
-            background: var(--ink);
-            background-size: cover;
-            background-position: top center;
-            background-repeat: no-repeat;
-        }
-
-        .cover-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.25) 55%, rgba(0,0,0,0.05) 100%);
-        }
-
-        .cover-section::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 1px;
-            background: rgba(255,255,255,0.2);
-            z-index: 2;
-        }
-
-        .cover-content {
-            position: relative;
-            z-index: 3;
-            padding: var(--pad-y) var(--pad-x);
-            color: white;
-            width: 100%;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            align-items: end;
-        }
-
-        .cover-label {
-            grid-column: 1 / -1;
-            font-size: 0.7em;
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.5);
-            margin-bottom: 1.2em;
-            display: flex;
-            align-items: center;
-            gap: 1em;
-        }
-        .cover-label::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: rgba(255,255,255,0.2);
-        }
-
-        .cover-content h1 {
-            grid-column: 1 / 2;
-            font-size: clamp(3.5rem, 8vw, 7rem);
-            line-height: 0.88em;
-            font-weight: 300;
-            text-transform: uppercase;
-            color: white;
-            padding-bottom: 2rem;
-        }
-
-        .cover-meta {
-            grid-column: 2 / 3;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding-bottom: 2rem;
-            padding-left: 3rem;
-            border-left: 1px solid rgba(255,255,255,0.15);
-            gap: 0.4em;
-        }
-
-        .cover-subtitle {
-            font-size: 0.85em;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.8);
-        }
-
-        .cover-date {
-            font-size: 0.75em;
-            letter-spacing: 0.1em;
-            color: rgba(255,255,255,0.4);
-            text-transform: uppercase;
-        }
-
-        /* ── SPREADS ── */
-        section {
-            position: relative;
+        /* ── each spread is a fixed viewport slice on screen ── */
+        .spread {
             width: 100vw;
             height: 100vh;
             display: flex;
         }
 
-        .parent {
+        /* ── IMAGE HALF ── */
+        .img-half {
+            width: 50%;
+            height: 100%;
+            background: #000;
+            flex-shrink: 0;
             position: relative;
-            flex: 1;
-            max-width: 50%;
             overflow: hidden;
         }
 
-        .parent > div:first-child {
+        /* the actual image — real <img> tag, sized with object-fit */
+        .img-half img.main-img {
+            display: block;
             width: 100%;
             height: 100%;
-            background-size: cover;
-            background-position: top center;
-            background-repeat: no-repeat;
-            background-color: #000000;
-        }
-
-        /* padding-box trick: background respects padding area */
-        .img-wrap {
-            width: 100%;
-            height: 100%;
-            background-color: #000;
-            background-size: contain;
-            background-position: top center;
-            background-repeat: no-repeat;
-            background-origin: content-box;
+            object-fit: contain;
+            object-position: top center;
             padding: 2rem;
-            box-sizing: border-box;
         }
 
-        .img-wrap img { display: none; }
+        .caption {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            right: 1.5rem;
+            font-size: 0.7em;
+            color: white;
+            background: rgba(0,0,0,0.5);
+            padding: 0.3em 0.6em;
+            letter-spacing: 0.04em;
+        }
 
-        .right {
-            flex: 1;
-            max-width: 50%;
+        /* ── TEXT HALF ── */
+        .text-half {
+            width: 50%;
+            height: 100%;
+            flex-shrink: 0;
+            background: #f2f1ee;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: var(--pad-y) var(--pad-x);
-            background: var(--off-white);
+            padding: 3rem 3.5rem;
             position: relative;
         }
 
-        body { counter-reset: entry; }
-        section { counter-increment: entry; }
-        .right::before {
-            content: counter(entry, decimal-leading-zero);
+        .entry-num {
             position: absolute;
-            top: var(--pad-y);
-            right: var(--pad-x);
+            top: 2.5rem;
+            right: 3rem;
             font-size: 0.65em;
             letter-spacing: 0.2em;
-            color: var(--ink-faint);
+            color: #aaa;
         }
 
-        .right-top { display: flex; flex-direction: column; }
+        .text-top { display: flex; flex-direction: column; }
 
-        h2 {
+        .category {
             font-size: 0.65em;
             letter-spacing: 0.25em;
             text-transform: uppercase;
-            font-weight: 600;
-            color: var(--ink-mid);
-            margin-bottom: 0.6em;
-            display: flex;
-            align-items: center;
-            gap: 0.6em;
+            color: #777;
+            margin-bottom: 0.8em;
         }
-        h2::before { content: '—'; color: var(--ink-faint); font-weight: 300; }
+        .category::before { content: '— '; }
 
         h1 {
-            font-size: clamp(2rem, 4.5vw, 4rem);
+            font-size: clamp(1.8rem, 3.5vw, 3.5rem);
             line-height: 0.92em;
             font-weight: 300;
             text-transform: uppercase;
-            letter-spacing: -0.01em;
-            color: var(--ink);
-            margin-bottom: 2rem;
-            width: 100%;
+            color: #111;
+            margin-bottom: 1.5rem;
         }
-
         h1::after {
             content: '';
             display: block;
             width: 2rem;
             height: 1px;
-            background: var(--ink);
-            margin-top: 1.2rem;
+            background: #111;
+            margin-top: 1rem;
         }
 
-        p {
+        .body-text {
             font-size: 0.85em;
             line-height: 1.75em;
-            color: var(--ink-mid);
+            color: #555;
         }
 
-        .right-bottom {
+        .text-bottom {
+            border-top: 1px solid rgba(0,0,0,0.1);
+            padding-top: 1rem;
             display: flex;
             flex-direction: column;
-            gap: 0.8em;
-            border-top: 1px solid var(--rule);
-            padding-top: 1.2em;
+            gap: 0.6em;
         }
 
-        a {
+        .entry-link {
             font-size: 0.7em;
-            letter-spacing: 0.06em;
-            color: var(--ink-faint);
+            color: #999;
             text-decoration: none;
-            text-transform: lowercase;
+            letter-spacing: 0.04em;
         }
 
-        .keywords {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.4em;
-        }
-
-        .keyword-tag {
-            font-size: 0.65em;
+        .tags { display: flex; flex-wrap: wrap; gap: 0.4em; }
+        .tag {
+            font-size: 0.62em;
             letter-spacing: 0.1em;
             text-transform: uppercase;
-            color: var(--ink-mid);
-            border: 1px solid var(--rule);
-            padding: 0.25em 0.65em;
+            color: #666;
+            border: 1px solid rgba(0,0,0,0.15);
+            padding: 0.2em 0.6em;
         }
 
-        .caption, .caption-right {
-            position: absolute;
-            bottom: 2em;
-            left: 1.5em;
-            width: calc(100% - 3em);
-            color: white;
-            font-size: 0.7em;
-            letter-spacing: 0.05em;
-            line-height: 1.4em;
-            background: rgba(0,0,0,0.45);
-            padding: 0.4em 0.7em;
-        }
-        .caption-right { right: 1.5em; left: auto; }
-
-        .leftDoubleImage {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-        .topdiv, .bottomdiv {
-            flex: 1;
+        /* ── COVER ── */
+        .cover {
+            width: 100vw;
+            height: 100vh;
+            background: #111;
             background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+            background-position: center top;
+            display: flex;
+            align-items: flex-end;
+            position: relative;
         }
-        .topdiv { border-bottom: 2px solid var(--white); }
+        .cover-grad {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 60%);
+        }
+        .cover-text {
+            position: relative;
+            z-index: 1;
+            padding: 3rem 3.5rem;
+            color: white;
+            width: 100%;
+        }
+        .cover-eyebrow {
+            font-size: 0.65em;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 0.8em;
+        }
+        .cover h1 {
+            font-size: clamp(3rem, 7vw, 6rem);
+            line-height: 0.88em;
+            font-weight: 300;
+            text-transform: uppercase;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+        .cover h1::after { display: none; }
+        .cover-sub {
+            font-size: 0.8em;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.7);
+        }
+        .cover-date {
+            font-size: 0.7em;
+            letter-spacing: 0.1em;
+            color: rgba(255,255,255,0.4);
+            margin-top: 0.3em;
+        }
 
-        /* ── PRINT ── */
+        /* ══════════════════════════════════════
+           PRINT — this is where it all counts
+        ══════════════════════════════════════ */
         @media print {
             @page { size: 297mm 210mm; margin: 0; }
 
@@ -298,112 +199,84 @@
 
             html, body {
                 width: 297mm;
-                margin: 0;
-                padding: 0;
-                font-size: 9pt;
-                /* NO height or overflow constraints on body — lets all pages render */
+                margin: 0; padding: 0;
+                background: #fafaf8;
             }
 
-            section,
-            .cover-section {
-                width: 297mm;
-                height: 210mm;
-                min-height: 210mm;
-                max-height: 210mm;
-                display: flex;
-                overflow: hidden;
-                page-break-after: always;
-                page-break-inside: avoid;
-                break-after: page;
-                break-inside: avoid;
+            /* every spread = exactly one A4 landscape page */
+            .spread, .cover {
+                width: 297mm !important;
+                height: 210mm !important;
+                min-height: 210mm !important;
+                max-height: 210mm !important;
+                page-break-after: always !important;
+                break-after: page !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                overflow: hidden !important;
+                display: flex !important;
             }
 
-            .parent, .right {
+            .img-half {
                 width: 148.5mm !important;
-                max-width: 148.5mm !important;
                 min-width: 148.5mm !important;
                 height: 210mm !important;
-                flex: none;
-                overflow: hidden;
+                background: #000 !important;
+                flex-shrink: 0 !important;
+                overflow: hidden !important;
+                position: relative !important;
             }
 
-            /* generic fallback for any image div */
-            .parent > div {
-                width: 148.5mm !important;
-                height: 210mm !important;
-                background-color: #000000 !important;
-            }
-
-            /* single image: padded contain, anchored top */
-            .img-wrap {
-                width: 148.5mm !important;
-                height: 210mm !important;
-                background-color: #000 !important;
-                background-size: contain !important;
-                background-position: top center !important;
-                background-repeat: no-repeat !important;
-                background-origin: content-box !important;
+            /* KEY: real <img> tag prints reliably */
+            .img-half img.main-img {
+                display: block !important;
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: contain !important;
+                object-position: top center !important;
                 padding: 1cm !important;
-                box-sizing: border-box !important;
             }
 
-            /* double image */
-            .leftDoubleImage {
+            .text-half {
                 width: 148.5mm !important;
+                min-width: 148.5mm !important;
                 height: 210mm !important;
-                background-color: #000000 !important;
+                padding: 1.8cm 1.5cm !important;
+                background: #f2f1ee !important;
+                flex-shrink: 0 !important;
             }
 
-            .topdiv, .bottomdiv {
-                width: 148.5mm !important;
-                height: 105mm !important;
+            h1 { font-size: 2.8em !important; }
+            .body-text { font-size: 0.75em !important; }
+
+            .cover {
                 background-size: cover !important;
-                background-position: center !important;
-                background-repeat: no-repeat !important;
+                background-position: center top !important;
+                align-items: flex-end !important;
             }
 
-            .right {
-                padding: 1.8cm 1.4cm 1.4cm !important;
-                background: var(--off-white) !important;
-                border: none !important;
+            .cover h1 { font-size: 4.5em !important; color: white !important; }
+            .cover-eyebrow, .cover-sub, .cover-date { color: rgba(255,255,255,0.7) !important; }
+            .cover-grad {
+                position: absolute !important;
+                inset: 0 !important;
+                background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 60%) !important;
             }
-
-            h1 { font-size: 3.2em !important; line-height: 0.88em !important; margin-bottom: 0.8em !important; max-width: 100% !important; }
-            h2 { font-size: 0.75em !important; max-width: 100% !important; }
-            p  { font-size: 0.78em !important; max-width: 100% !important; }
-            a  { font-size: 0.68em !important; max-width: 100% !important; }
-
-            .caption, .caption-right {
-                font-size: 0.65em;
-                bottom: 1cm;
-                left: 0.8cm;
-                width: calc(100% - 1.6cm);
-            }
-
-            .cover-section {
-                background-size: cover !important;
-                background-position: center !important;
-            }
-            .cover-content h1 { color: white !important; max-width: 100% !important; font-size: 5.5em !important; }
-            .cover-label, .cover-subtitle, .cover-date { color: white !important; max-width: 100% !important; }
-            .cover-meta { max-width: 100% !important; }
         }
     </style>
 </head>
-
 <body>
 
-    <section class="cover-section" style="background-image: url('https://source.unsplash.com/random/1600x900?architecture');">
-        <div class="cover-overlay"></div>
-        <div class="cover-content">
-            <div class="cover-label">INTERACTIVE MEDIA</div>
+    <!-- COVER — edit directly -->
+    <div class="cover" style="background-image: url('cover.jpg');">
+        <div class="cover-grad"></div>
+        <div class="cover-text">
+            <div class="cover-eyebrow">INTERACTIVE MEDIA</div>
             <h1>RESEARCH<br>JOURNAL</h1>
-            <div class="cover-meta">
-                <div class="cover-subtitle">Zimai Gao &nbsp;·&nbsp; 1617186 / GDES30008</div>
-                <div class="cover-date">Sem 1, 2026</div>
-            </div>
+            <div class="cover-sub">Zimai Gao &nbsp;·&nbsp; 1617186 / GDES30008</div>
+            <div class="cover-date">Sem 1, 2026</div>
         </div>
-    </section>
+    </div>
 
     <script>
         var journalReady = false;
@@ -412,69 +285,65 @@
             if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
                 e.preventDefault();
                 if (journalReady) {
-                    triggerPrint();
+                    doPrint();
                 } else {
-                    var poll = setInterval(function() {
-                        if (journalReady) { clearInterval(poll); triggerPrint(); }
-                    }, 200);
+                    var t = setInterval(function() {
+                        if (journalReady) { clearInterval(t); doPrint(); }
+                    }, 150);
                 }
             }
         });
 
-        function triggerPrint() {
-            setTimeout(function() { window.print(); }, 400);
+        function doPrint() {
+            setTimeout(window.print.bind(window), 500);
         }
 
-        $(document).ready(function () {
+        $(document).ready(function() {
             Papa.parse('ResearchJournal.csv', {
                 download: true,
                 header: true,
-                complete: function (results) {
+                complete: function(results) {
                     var rows = results.data.filter(function(r) {
                         return r['Title'] && r['Title'].trim() !== '';
                     });
 
-                    rows.forEach(function (row) {
+                    var entryNum = 1;
+
+                    rows.forEach(function(row) {
                         var layoutRight = (row['Layout'] || '').trim().toLowerCase() === 'right';
+                        var num = String(entryNum++).padStart(2, '0');
 
-                        var section   = $('<section>');
-                        var parentDiv = $('<div>').addClass('parent');
-                        var leftDiv   = $('<div>').addClass(row['Class']);
-                        var topdiv    = $('<div>').addClass('topdiv').css('background-image', 'url(' + row['ImageSrc'] + ')');
-                        var bottomdiv = $('<div>').addClass('bottomdiv').css('background-image', 'url(' + row['ImageSrc2'] + ')');
-                        var rightDiv  = $('<div>').addClass('right');
-
-                        var h1 = $('<h1>').text(row['Title']);
-                        var h2 = $('<h2>').text(row['Description']);
-                        var p  = $('<p>').text(row['BodyText']);
-                        var a  = $('<a>').attr('href', row['Link']).text(row['Link']);
-
-                        var captionDiv;
-                        if (row['Class'] === 'leftDoubleImage') {
-                            leftDiv.append(topdiv, bottomdiv);
-                            captionDiv = $('<div>').addClass(layoutRight ? 'caption-right' : 'caption')
-                                .text('Above: ' + row['Caption'] + ' | Below: ' + row['Caption2']);
-                        } else {
-                            // background-origin:content-box + padding gives padded contain
-                            var imgWrap = $('<div>').addClass('img-wrap').css('background-image', 'url(' + row['ImageSrc'] + ')');
-                            leftDiv.append(imgWrap);
-                            captionDiv = $('<div>').addClass(layoutRight ? 'caption-right' : 'caption').text(row['Caption']);
+                        // ── image half ──
+                        var imgHalf = $('<div class="img-half">');
+                        var img = $('<img class="main-img">').attr('src', row['ImageSrc']).attr('alt', row['Caption'] || '');
+                        imgHalf.append(img);
+                        if (row['Caption']) {
+                            imgHalf.append($('<div class="caption">').text(row['Caption']));
                         }
-                        parentDiv.append(leftDiv, captionDiv);
 
-                        // build keyword tags
-                        var keyWords = (row['Keywords'] || '').split(', ');
-                        var keywordsDiv = $('<div>').addClass('keywords');
-                        keyWords.forEach(function(k) {
-                            if (k.trim()) keywordsDiv.append($('<span>').addClass('keyword-tag').text(k.trim()));
+                        // ── text half ──
+                        var textHalf = $('<div class="text-half">');
+                        textHalf.append($('<div class="entry-num">').text(num));
+
+                        var textTop = $('<div class="text-top">');
+                        if (row['Description']) textTop.append($('<div class="category">').text(row['Description']));
+                        textTop.append($('<h1>').text(row['Title']));
+                        if (row['BodyText']) textTop.append($('<div class="body-text">').text(row['BodyText']));
+                        textHalf.append(textTop);
+
+                        var textBottom = $('<div class="text-bottom">');
+                        if (row['Link']) textBottom.append($('<a class="entry-link">').attr('href', row['Link']).text(row['Link']));
+                        var tags = $('<div class="tags">');
+                        (row['Keywords'] || '').split(',').forEach(function(k) {
+                            k = k.trim();
+                            if (k) tags.append($('<span class="tag">').text(k));
                         });
+                        textBottom.append(tags);
+                        textHalf.append(textBottom);
 
-                        var rightTop    = $('<div>').addClass('right-top').append(h2, h1, p);
-                        var rightBottom = $('<div>').addClass('right-bottom').append(a, keywordsDiv);
-                        rightDiv.append(rightTop, rightBottom);
-
-                        section.append(layoutRight ? [rightDiv, parentDiv] : [parentDiv, rightDiv]);
-                        $('body').append(section);
+                        var spread = $('<div class="spread">');
+                        spread.append(layoutRight ? [textHalf, imgHalf] : [imgHalf, textHalf]);
+                        $('body').append(spread);
                     });
 
                     journalReady = true;
@@ -482,6 +351,5 @@
             });
         });
     </script>
-
 </body>
 </html>
