@@ -229,8 +229,7 @@
 
 <body> 
     <script>
-        /* THIS SCRIPT IS LOADED VIA CDN AND ESSENTIALLY READS THE .csv FILE ROW BY ROW 
-        TO GET THE VARIOUS `COMPONENTS` OF YOUR `JOURNAL` ONE `ENTRY` PER SECTION */
+        
         $(document).ready(function () {
             Papa.parse('ResearchJournal.csv', {
                 download: true,
@@ -278,40 +277,6 @@
         });
     </script>
 
-   <section class="cover"> <!-- cover page -->
-        <div class="parent">
-            <div class="left"></div>
-        </div>
-    </section>
-
-    <section> <!--reference 1 -->
-        <div class="parent">
-            <div class="left"></div>
-            <div class="caption">Your caption goes here, with <span class="caption_title">A Title, </span>Author, &
-                <span class="caption_url">url</span></div>
-        </div>
-        <div class="right">
-            <h1>Header</h1>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc at bibendum dapibus, risus
-                ante dapibus est, a feugiat turpis elit id eros.</p>
-            <a href="#">Read more</a>
-        </div>
-    </section> 
-
-    <section> <!--reference 2 --> 
-         <div class="right">
-            <h1>Header</h1>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nunc at bibendum dapibus, risus
-                ante dapibus est, a feugiat turpis elit id eros.</p>
-            <a href="#">Read more</a>
-        </div>
-        <div class="parent">
-            <div class="left"></div>
-            <div class="caption">Your caption goes here, with <span class="caption_title">A Title, </span>Author, &
-                <span class="caption_url">url</span></div>
-        </div>
-       
-    </section> 
-</body>
+ 
 
 </html>
