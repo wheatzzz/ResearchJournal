@@ -6,40 +6,126 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <style>
-     * {
-        margin: 0;
-        padding: 0;
-        border: none;
-        }
-        @font-face { 
-    font-family: 'helv'; 
-    src: url('HelveticaNowDisplay.otf');
-    } 
-    @font-face {
-        font-family: 'helvAlt';
-        font-feature-settings: "aalt"; 
-        src: url('HelveticaNowDisplay.otf');
-        font-feature-settings: "ss04";
-        unicode-range: U+0052,U+0052 ;}
-    .cover {
-        page: cover;
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background-image: url('https://source.unsplash.com/random/1600x900') no-repeat center center;
-        background-repeat: no-repeat;
-        background-size: cover;
-        }
-        body {
-            /* display: flex; */
-            height: 100vh;
-            font-weight: 100;
-            font-family: helv, helvAlt, Arial, sans-serif;
-            font-size:14px;
-            font-feature-settings: "ss04";
-            font-weight: lighter;
+        :root {
+            --white:     #fafaf8;
+            --off-white: #f2f1ee;
+            --ink:       #111110;
+            --ink-mid:   #555550;
+            --ink-faint: #99998f;
+            --rule:      rgba(17,17,16,0.12);
+            --pad-x:     3.5rem;
+            --pad-y:     3rem;
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        @font-face {
+            font-family: 'helv';
+            src: url('HelveticaNowDisplay.otf');
+        }
+
+        body {
+            font-family: helv, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 13px;
+            font-weight: 300;
+            color: var(--ink);
+            background: var(--white);
+            font-feature-settings: "ss04";
+        }
+
+        /* ── COVER ── */
+        .cover-section {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: flex-end;
+            background: var(--ink);
+            background-size: cover;
+            background-position: top center;
+            background-repeat: no-repeat;
+        }
+
+        .cover-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.25) 55%, rgba(0,0,0,0.05) 100%);
+        }
+
+        .cover-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: rgba(255,255,255,0.2);
+            z-index: 2;
+        }
+
+        .cover-content {
+            position: relative;
+            z-index: 3;
+            padding: var(--pad-y) var(--pad-x);
+            color: white;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: end;
+        }
+
+        .cover-label {
+            grid-column: 1 / -1;
+            font-size: 0.7em;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 1.2em;
+            display: flex;
+            align-items: center;
+            gap: 1em;
+        }
+        .cover-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .cover-content h1 {
+            grid-column: 1 / 2;
+            font-size: clamp(3.5rem, 8vw, 7rem);
+            line-height: 0.88em;
+            font-weight: 300;
+            text-transform: uppercase;
+            color: white;
+            padding-bottom: 2rem;
+        }
+
+        .cover-meta {
+            grid-column: 2 / 3;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding-bottom: 2rem;
+            padding-left: 3rem;
+            border-left: 1px solid rgba(255,255,255,0.15);
+            gap: 0.4em;
+        }
+
+        .cover-subtitle {
+            font-size: 0.85em;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .cover-date {
+            font-size: 0.75em;
+            letter-spacing: 0.1em;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+        }
+
+        /* ── SPREADS ── */
         section {
             position: relative;
             width: 100vw;
@@ -47,236 +133,355 @@
             display: flex;
         }
 
-        .parent,
-        .right {
+        .parent {
+            position: relative;
             flex: 1;
-            display: flex;
-            flex-direction: column;
-            /* justify-content: center; */
-            align-items: center;
-            /* padding: 20px; */
-            /* this can add a frame*/
-            box-sizing: border-box;
             max-width: 50%;
-            /* border: rgb(24, 185, 64) 1px solid; */
+            overflow: hidden;
         }
 
-        .parent {
+        .parent > div:first-child {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: top center;
+            background-repeat: no-repeat;
+            background-color: #000000;
+        }
+
+        /* padding-box trick: background respects padding area */
+        .img-wrap {
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            background-size: contain;
+            background-position: top center;
+            background-repeat: no-repeat;
+            background-origin: content-box;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+
+        .img-wrap img { display: none; }
+
+        .right {
+            flex: 1;
+            max-width: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: var(--pad-y) var(--pad-x);
+            background: var(--off-white);
             position: relative;
         }
 
-        .left, .topdiv, .bottomdiv {
-            background: url('https://source.unsplash.com/random/800x601') no-repeat center center;
-            background-size: cover;
-            /* border: blue 1px dashed; */
-            width: 100%;
-            height: 100vh;
-            /* adjust as needed */
-        }
-        .topdiv, .bottomdiv {
-            height: 50vh;
-            width:100%
-        }
-
-        .leftDoubleImage {
-            width: 100%;
-            height: 100vh;
-        }
-
-        .leftDoubleImage img {
-            background-repeat: no-repeat;
-            background-position: center center;
-            background-size: cover;
-            /* border: blue 1px solid; */
-            width:auto;
-        }
-
-        .caption {
+        body { counter-reset: entry; }
+        section { counter-increment: entry; }
+        .right::before {
+            content: counter(entry, decimal-leading-zero);
             position: absolute;
-            bottom: 4em;
-            /* adjust as needed */
-            left: 2em;
-            width:calc(100% - 4em - 1em); 
-            /* adjust as needed */
-            color: black;
-            /* adjust as needed */
-            font-size: 1em;
-            line-height: 1.0em;
-            /* adjust as needed */
-            background-color: white;
-            padding: 2px 5px;
+            top: var(--pad-y);
+            right: var(--pad-x);
+            font-size: 0.65em;
+            letter-spacing: 0.2em;
+            color: var(--ink-faint);
         }
 
-        .right {
-            background: #f0f0f0; 
-            border: #A9A9A9 1px solid; 
-            padding: 3em;
+        .right-top { display: flex; flex-direction: column; }
+
+        h2 {
+            font-size: 0.65em;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: var(--ink-mid);
+            margin-bottom: 0.6em;
+            display: flex;
+            align-items: center;
+            gap: 0.6em;
         }
+        h2::before { content: '—'; color: var(--ink-faint); font-weight: 300; }
 
         h1 {
-            font-size: 6em;
-            line-height:0.9em;
-            font-weight: lighter;
+            font-size: clamp(2rem, 4.5vw, 4rem);
+            line-height: 0.92em;
+            font-weight: 300;
             text-transform: uppercase;
-            text-align: left;
-            margin-bottom: 20px;
-            width: 100%
-        }
-        h2 {
-            text-align:left;
-            text-transform: uppercase;
-            font-weight: bold;
-            font-size: 1em;
+            letter-spacing: -0.01em;
+            color: var(--ink);
+            margin-bottom: 2rem;
             width: 100%;
         }
-        h2::before{
-            content: "{";
-            line-height: 2em;
+
+        h1::after {
+            content: '';
+            display: block;
+            width: 2rem;
+            height: 1px;
+            background: var(--ink);
+            margin-top: 1.2rem;
         }
-        h2::after{
-            content: "}";
-        }
+
         p {
-            margin-bottom: 20px;
+            font-size: 0.85em;
+            line-height: 1.75em;
+            color: var(--ink-mid);
+        }
+
+        .right-bottom {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8em;
+            border-top: 1px solid var(--rule);
+            padding-top: 1.2em;
         }
 
         a {
-            color: #333;
+            font-size: 0.7em;
+            letter-spacing: 0.06em;
+            color: var(--ink-faint);
             text-decoration: none;
-            font-size: 0.8em;
-            width:100%;
-            text-align: left;
-        }
-        em{
-            font-size: inherit;
-            line-height: 3em;
-            width: 100%;
-        }
-        @media (max-width: 600px) {
-            *{            
-            margin: 0;
-            padding: 0;
-            border: none;}
-            body {
-                flex-direction: column;
-            }
+            text-transform: lowercase;
         }
 
-    @media print {
-        @page {
-            size: A4 landscape;
-            margin:1cm;
-            /* marks: crop cross;
-            bleed: 5mm; */
-            @bottom-center {
-    content: counter(page);
-  }
-         }
-         @page cover {
-  margin: 0; /* Use a full size page */
-
-  /* Remove page numbers for the cover */
-  @bottom-center {
-    content: none;
-  }
-}
-        @page :left {
-            margin-left: 1cm;
-        }
-        
-        @page :right {
-            margin-right: 1cm;
-        }
-        body {
-        width: 297mm;
-        height: 210mm;
-        margin: 0;
-        padding: 0;
-        page-break-after: always;  
-        font-size: 10pt;}
-        em {
-        text-align: left;
-        }
-        section {
-            min-height: calc(100% - 2cm);
-            height: 100vh;
+        .keywords {
             display: flex;
-            page-break-inside: avoid;
-            page-break-after: always !important;
+            flex-wrap: wrap;
+            gap: 0.4em;
         }
-        h1 {
-        font-size: 5em;
-        line-height: 0.8em;
+
+        .keyword-tag {
+            font-size: 0.65em;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--ink-mid);
+            border: 1px solid var(--rule);
+            padding: 0.25em 0.65em;
         }
-        h2 {
-        font-size: 1.5em;
+
+        .caption, .caption-right {
+            position: absolute;
+            bottom: 2em;
+            left: 1.5em;
+            width: calc(100% - 3em);
+            color: white;
+            font-size: 0.7em;
+            letter-spacing: 0.05em;
+            line-height: 1.4em;
+            background: rgba(0,0,0,0.45);
+            padding: 0.4em 0.7em;
         }
-        div {
-         max-width:50%;
-        }
-        p {
-        font-size: 0.8em;
-        }
-        em{
-            font-size: 10pt;
-            line-height: 3em;
+        .caption-right { right: 1.5em; left: auto; }
+
+        .leftDoubleImage {
             width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
-    }
-    
+        .topdiv, .bottomdiv {
+            flex: 1;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .topdiv { border-bottom: 2px solid var(--white); }
+
+        /* ── PRINT ── */
+        @media print {
+            @page { size: 297mm 210mm; margin: 0; }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            html, body {
+                width: 297mm;
+                margin: 0;
+                padding: 0;
+                font-size: 9pt;
+                /* NO height or overflow constraints on body — lets all pages render */
+            }
+
+            section,
+            .cover-section {
+                width: 297mm;
+                height: 210mm;
+                min-height: 210mm;
+                max-height: 210mm;
+                display: flex;
+                overflow: hidden;
+                page-break-after: always;
+                page-break-inside: avoid;
+                break-after: page;
+                break-inside: avoid;
+            }
+
+            .parent, .right {
+                width: 148.5mm !important;
+                max-width: 148.5mm !important;
+                min-width: 148.5mm !important;
+                height: 210mm !important;
+                flex: none;
+                overflow: hidden;
+            }
+
+            /* generic fallback for any image div */
+            .parent > div {
+                width: 148.5mm !important;
+                height: 210mm !important;
+                background-color: #000000 !important;
+            }
+
+            /* single image: padded contain, anchored top */
+            .img-wrap {
+                width: 148.5mm !important;
+                height: 210mm !important;
+                background-color: #000 !important;
+                background-size: contain !important;
+                background-position: top center !important;
+                background-repeat: no-repeat !important;
+                background-origin: content-box !important;
+                padding: 1cm !important;
+                box-sizing: border-box !important;
+            }
+
+            /* double image */
+            .leftDoubleImage {
+                width: 148.5mm !important;
+                height: 210mm !important;
+                background-color: #000000 !important;
+            }
+
+            .topdiv, .bottomdiv {
+                width: 148.5mm !important;
+                height: 105mm !important;
+                background-size: cover !important;
+                background-position: center !important;
+                background-repeat: no-repeat !important;
+            }
+
+            .right {
+                padding: 1.8cm 1.4cm 1.4cm !important;
+                background: var(--off-white) !important;
+                border: none !important;
+            }
+
+            h1 { font-size: 3.2em !important; line-height: 0.88em !important; margin-bottom: 0.8em !important; max-width: 100% !important; }
+            h2 { font-size: 0.75em !important; max-width: 100% !important; }
+            p  { font-size: 0.78em !important; max-width: 100% !important; }
+            a  { font-size: 0.68em !important; max-width: 100% !important; }
+
+            .caption, .caption-right {
+                font-size: 0.65em;
+                bottom: 1cm;
+                left: 0.8cm;
+                width: calc(100% - 1.6cm);
+            }
+
+            .cover-section {
+                background-size: cover !important;
+                background-position: center !important;
+            }
+            .cover-content h1 { color: white !important; max-width: 100% !important; font-size: 5.5em !important; }
+            .cover-label, .cover-subtitle, .cover-date { color: white !important; max-width: 100% !important; }
+            .cover-meta { max-width: 100% !important; }
+        }
     </style>
 </head>
 
-<body> 
+<body>
+
+    <section class="cover-section" style="background-image: url('https://source.unsplash.com/random/1600x900?architecture');">
+        <div class="cover-overlay"></div>
+        <div class="cover-content">
+            <div class="cover-label">INTERACTIVE MEDIA</div>
+            <h1>RESEARCH<br>JOURNAL</h1>
+            <div class="cover-meta">
+                <div class="cover-subtitle">Zimai Gao &nbsp;·&nbsp; 1617186 / GDES30008</div>
+                <div class="cover-date">Sem 1, 2026</div>
+            </div>
+        </div>
+    </section>
+
     <script>
-        
+        var journalReady = false;
+
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                e.preventDefault();
+                if (journalReady) {
+                    triggerPrint();
+                } else {
+                    var poll = setInterval(function() {
+                        if (journalReady) { clearInterval(poll); triggerPrint(); }
+                    }, 200);
+                }
+            }
+        });
+
+        function triggerPrint() {
+            setTimeout(function() { window.print(); }, 400);
+        }
+
         $(document).ready(function () {
             Papa.parse('ResearchJournal.csv', {
                 download: true,
                 header: true,
                 complete: function (results) {
-                    results.data.forEach(function (row) {
-                        var section = $('<section>');
+                    var rows = results.data.filter(function(r) {
+                        return r['Title'] && r['Title'].trim() !== '';
+                    });
+
+                    rows.forEach(function (row) {
+                        var layoutRight = (row['Layout'] || '').trim().toLowerCase() === 'right';
+
+                        var section   = $('<section>');
                         var parentDiv = $('<div>').addClass('parent');
-                        var leftDiv = $('<div>').addClass(row['Class']);
-                        var topdiv = $('<div>').addClass('topdiv').css('background-image', 'url(' + row['ImageSrc'] + ')');
+                        var leftDiv   = $('<div>').addClass(row['Class']);
+                        var topdiv    = $('<div>').addClass('topdiv').css('background-image', 'url(' + row['ImageSrc'] + ')');
                         var bottomdiv = $('<div>').addClass('bottomdiv').css('background-image', 'url(' + row['ImageSrc2'] + ')');
-                        var rightDiv = $('<div>').addClass('right');
-                        
+                        var rightDiv  = $('<div>').addClass('right');
+
                         var h1 = $('<h1>').text(row['Title']);
                         var h2 = $('<h2>').text(row['Description']);
-                        var p = $('<p>').text(row['BodyText']);
-                        var a = $('<a>').attr('href', row['Link']).text(row['Link']); 
-                        var img = $('<img>').attr('src', row['ImageSrc']);
-                        var img2 = $('<img>').attr('src', row['ImageSrc2']);
-                        //var figcaption = $('<figcaption>').text(row['Caption'].'\n'.$row['Caption2']);
-                        //figure.append(img, figcaption);
-                        if (row['Class'] == 'leftDoubleImage') {
+                        var p  = $('<p>').text(row['BodyText']);
+                        var a  = $('<a>').attr('href', row['Link']).text(row['Link']);
+
+                        var captionDiv;
+                        if (row['Class'] === 'leftDoubleImage') {
                             leftDiv.append(topdiv, bottomdiv);
-                            var captionText = 'Above: '+ row['Caption'] + ' | Below: ' + row['Caption2'];
-                            var captionDiv = $('<div>').addClass('caption').text(captionText);
+                            captionDiv = $('<div>').addClass(layoutRight ? 'caption-right' : 'caption')
+                                .text('Above: ' + row['Caption'] + ' | Below: ' + row['Caption2']);
                         } else {
-                            leftDiv.css('background-image', 'url(' + row['ImageSrc'] + ')');
-                            leftDiv.css('background-size', 'cover');
-                            var captionDiv = $('<div>').addClass('caption').text(row['Caption']);
+                            // background-origin:content-box + padding gives padded contain
+                            var imgWrap = $('<div>').addClass('img-wrap').css('background-image', 'url(' + row['ImageSrc'] + ')');
+                            leftDiv.append(imgWrap);
+                            captionDiv = $('<div>').addClass(layoutRight ? 'caption-right' : 'caption').text(row['Caption']);
                         }
                         parentDiv.append(leftDiv, captionDiv);
-                        rightDiv.append(h1);
-                        var keyWords = row['Keywords'].split(', ');
-                        var span = '<p style="width:100%; line-height:2em;">';
-                        keyWords.forEach((keyword) => {
-                            span+='#' + keyword + '&nbsp;';
+
+                        // build keyword tags
+                        var keyWords = (row['Keywords'] || '').split(', ');
+                        var keywordsDiv = $('<div>').addClass('keywords');
+                        keyWords.forEach(function(k) {
+                            if (k.trim()) keywordsDiv.append($('<span>').addClass('keyword-tag').text(k.trim()));
                         });
-                        span+='</p>';
-                        rightDiv.append(h2, p, a, span);
-                        section.append(parentDiv, rightDiv);
+
+                        var rightTop    = $('<div>').addClass('right-top').append(h2, h1, p);
+                        var rightBottom = $('<div>').addClass('right-bottom').append(a, keywordsDiv);
+                        rightDiv.append(rightTop, rightBottom);
+
+                        section.append(layoutRight ? [rightDiv, parentDiv] : [parentDiv, rightDiv]);
                         $('body').append(section);
                     });
+
+                    journalReady = true;
                 }
             });
         });
     </script>
 
- 
-
+</body>
 </html>
