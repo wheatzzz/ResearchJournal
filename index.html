@@ -351,5 +351,38 @@
             });
         });
     </script>
+                <style>
+            .workbook-back {
+                position: fixed;
+                top: 22px;
+                left: 22px;
+                z-index: 9999;
+                font-family: 'Georgia', serif;
+                font-size: 0.82rem;
+                font-style: italic;
+                letter-spacing: 0.04em;
+                color: #1F1A1A;
+                text-decoration: none;
+                opacity: 0.5;
+                transition: opacity 0.2s;
+                /* Only show when referred from your workbook */
+                display: none;
+            }
+            .workbook-back:hover { opacity: 1; }
+            </style>
+
+            <a class="workbook-back" id="workbook-back" href="#">← workbook b</a>
+
+            <script>
+            // Only show the back button if the user came from your workbook
+            const LIBRARY_URL = 'https://wheatzzz.github.io/workbookb/library.html';
+            const btn = document.getElementById('workbook-back');
+            const ref = document.referrer;
+
+            if (ref && ref.includes('wheatzzz.github.io/workbookb')) {
+                btn.href = LIBRARY_URL;
+                btn.style.display = 'block';
+            }
+            </script>
 </body>
 </html>
